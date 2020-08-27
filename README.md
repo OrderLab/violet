@@ -17,7 +17,13 @@ root repository that contains the entry points for all the components.
 
 ## Usage
 
+```bash
+$ ./build.sh
 
+```
+
+Note: the compilation will take a long time. The resulting repos and build in 
+`workspace` will be also HUGE---more than 10GB.
 
 ## Publication
 

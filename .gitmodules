@@ -1,0 +1,12 @@
+[submodule "env"]
+	path = env
+	url = https://github.com/OrderLab/violet-s2e-env.git
+[submodule "trace-analyzer"]
+	path = trace-analyzer
+	url = https://github.com/OrderLab/violet-trace-analyzer.git
+[submodule "checker"]
+	path = checker
+	url = https://github.com/OrderLab/violet-checker.git
+[submodule "static-analyzer"]
+	path = static-analyzer
+	url = https://github.com/OrderLab/violet-static-analyzer.git

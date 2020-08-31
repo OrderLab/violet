@@ -17,9 +17,18 @@ root repository that contains the entry points for all the components.
 
 ## Usage
 
+### Clone the repository
+
+```bash
+git clone https://github.com/OrderLab/violet.git
+cd violet
+git submodule update --init --recursive
+```
+
+### Build S2E and guest images:
+
 ```bash
 $ ./build.sh
-
 ```
 
 Note: the compilation will take a long time. The resulting repos and build in 

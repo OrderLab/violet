@@ -4,3 +4,4 @@ cscope.*
 tags
 *.swp
 .DS_Store
+*.log

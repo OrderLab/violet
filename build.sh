@@ -9,11 +9,15 @@ sudo apt-get install -y repo
 root_dir=$(cd "$(dirname "${BASH_SOURCE-$0}")"; pwd)
 cd env
 python -m pip install --user .
-if [$# -ne 0 ]; then
+if [ $# -ne 0 ]; then
   dest_dir=$1
 else
   dest_dir=$root_dir/workspace
 fi
+# clean up old pyopenssl and reinstall 'pyopenssl' to fix "'module ' object has no attribute 'SSL_ST_INIT'" error
+sudo rm -rf /usr/lib/python2.7/dist-packages/OpenSSL
+sudo rm -rf /usr/lib/python2.7/dist-packages/pyOpenSSL-0.15.1.egg-info
+sudo pip install -U pyopenssl
 s2e init $dest_dir
 cd $dest_dir
 source s2e_activate

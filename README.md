@@ -34,6 +34,26 @@ $ ./build.sh
 Note: the compilation will take a long time. The resulting repos and build in 
 `workspace` will be also HUGE---more than 10GB.
 
+# Known Issues
+
+1. AMD CPUs
+
+The build will fail on AMD CPUs, specifically failing with `error: unknown target CPU 'i486'` error during the step of 
+building `rapidjson` library:
+
+```bash
+make[2]: *** [example/CMakeFiles/filterkeydom.dir/all] Error 2
+example/CMakeFiles/prettyauto.dir/build.make:62: recipe for target 'example/CMakeFiles/prettyauto.dir/prettyauto/prettyauto.cpp.o' failed
+make[3]: *** [example/CMakeFiles/prettyauto.dir/prettyauto/prettyauto.cpp.o] Error 1
+make[3]: Leaving directory '/data/local/ryan/violet/workspace/build/s2e/rapidjson-build'
+error: unknown target CPU 'i486'
+```
+
+This is because S2E build [Makefile](https://github.com/OrderLab/violet-s2e-build-scripts/blob/violet/Makefile) directly **downloads** the 
+pre-built Clang binaries from the LLVM release to save time. While there is a script to determine the proper package, the pre-built Clang 
+binary in the downloaded `clang+llvm-3.9.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz` does not seem to work on AMD CPUs. Fixing this requires 
+building Clang and LLVM 3.9.1 from source. A more easier way is just to switch to machines with Intel CPUs.
+
 ## Publication
 
 * [Automated Reasoning and Detection of Specious Configuration in Large Systems with Symbolic Execution](#).

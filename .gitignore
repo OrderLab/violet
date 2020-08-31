@@ -5,3 +5,4 @@ tags
 *.swp
 .DS_Store
 *.log
+/workspace*/

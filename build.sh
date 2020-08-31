@@ -16,7 +16,7 @@ else
 fi
 # clean up old pyopenssl and reinstall 'pyopenssl' to fix "'module ' object has no attribute 'SSL_ST_INIT'" error
 sudo rm -rf /usr/lib/python2.7/dist-packages/OpenSSL
-sudo rm -rf /usr/lib/python2.7/dist-packages/pyOpenSSL-0.15.1.egg-info
+sudo rm -rf /usr/lib/python2.7/dist-packages/pyOpenSSL-0.*.egg-info
 sudo pip install -U pyopenssl
 s2e init $dest_dir
 cd $dest_dir

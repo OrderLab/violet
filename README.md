@@ -34,7 +34,7 @@ $ ./build.sh
 Note: the compilation will take a long time. The resulting repos and build in 
 `workspace` will be also HUGE---more than 10GB.
 
-# Known Issues
+## Known Issues
 
 1. AMD CPUs
 

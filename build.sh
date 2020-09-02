@@ -20,6 +20,7 @@ sudo rm -rf /usr/lib/python2.7/dist-packages/OpenSSL
 sudo rm -rf /usr/lib/python2.7/dist-packages/pyOpenSSL-0.*.egg-info
 sudo pip install -U pyopenssl
 
+cd $root_dir
 
 # Create a Violet workspace
 s2e init $dest_dir

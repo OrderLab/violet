@@ -54,6 +54,27 @@ pre-built Clang binaries from the LLVM release to save time. While there is a sc
 binary in the downloaded `clang+llvm-3.9.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz` does not seem to work on AMD CPUs. Fixing this requires 
 building Clang and LLVM 3.9.1 from source. A more easier way is just to switch to machines with Intel CPUs.
 
+2. Cloud VMs
+
+Building the guest images would encounter errors in cloud VM instances because of the 
+lack of KVM support:
+
+```bash
+$ s2e image_build debian-9.2.1-x86_64
+INFO: [image_build] The following images will be built:
+INFO: [image_build]  * debian-9.2.1-x86_64
+ERROR: [image_build] KVM interface not found - check that /dev/kvm exists. Alternatively, you can disable KVM (-n option) or download pre-built images (-d option)
+```
+
+The workaround is, as hinted in the error message, to disable KVM with the `-n` option,
+i.e., `s2e image_build -n debian-9.2.1-x86_64`. However, the consequence is that 
+the image building will be slow. In addition, running Violet will be slow as well,
+which can cause interference to the performance analysis.
+
+A more ideal solution is to enable nested virtualization and KVM in the VM instances, 
+e.g., for Google cloud, following the instruction in this [guide](https://cloud.google.com/compute/docs/instances/enable-nested-virtualization-vm-instances).
+In general, it is highly recommended to run Violet in physical machines.
+
 ## Publication
 
 * [Automated Reasoning and Detection of Specious Configuration in Large Systems with Symbolic Execution](#).

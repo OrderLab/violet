@@ -149,6 +149,14 @@ EOF
 ./bin/mysqladmin -S mysqld.sock -u root shutdown
 ```
 
+#### 5.5 Symbolic execution
+
+Finally, we can symbolically execute the target system:
+
+```bash
+$ ./launch-s2e.sh
+```
+
 ## Known Issues
 
 1. AMD CPUs

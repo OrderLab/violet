@@ -39,9 +39,11 @@ sudo su - $(whoami)
 # Restart docker
 sudo systemctl restart docker
 
-# We've logged out, reactivate the env
-cd $dest_dir
-source s2e_activate
+# We've logged out, reactivate the env. The following commands will be run in orphan
+# mode. Better off running them separately.
+
+# cd $dest_dir
+# source s2e_activate
 
 # Now try building the image
-s2e image_build debian-9.2.1-x86_64
+# s2e image_build debian-9.2.1-x86_64

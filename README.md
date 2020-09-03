@@ -194,6 +194,17 @@ Terminating node id 0 (instance slot 0)
 Engine terminated.
 ```
 
+### 6. Trace Analysis
+
+Run the trace analyzer on the traces from the symbolic execution:
+
+```bash
+$ cd ~/violet/trace-analyzer
+$ mkdir build 
+$ cmake .. && make -j4 && cd ..
+$ build/bin/trace_analyzer -i test/LatencyTrace1_autocommit.dat -s test/mysqld.sym -o result.txt
+```
+
 ## Known Issues
 
 1. AMD CPUs

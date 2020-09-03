@@ -16,3 +16,6 @@
 [submodule "plugins"]
 	path = plugins
 	url = https://github.com/OrderLab/violet-s2e-plugins.git
+[submodule "target-sys"]
+	path = target-sys
+	url = https://github.com/OrderLab/violet-target-sys.git

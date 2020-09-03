@@ -135,7 +135,6 @@ mv mysqld /home/s2e/software/mysql/5.5.59/bin
 cd /home/s2e/software/mysql/5.5.59/
 
 # Run the analysis
-execute "./mysqld"
 export VIO_SYM_CONFIGS="autocommit"
 ./bin/mysqld --defaults-file=my.cnf --one-thread &
 sleep 30
@@ -149,12 +148,50 @@ EOF
 ./bin/mysqladmin -S mysqld.sock -u root shutdown
 ```
 
+In this case, we are testing making the MySQL configuration parameter `autocommit` 
+symbolic.
+
 #### 5.5 Symbolic execution
 
 Finally, we can symbolically execute the target system:
 
 ```bash
 $ ./launch-s2e.sh
+```
+
+The execution should explore two states, with output of something like the following:
+
+```
+...
+20 [State 0] BaseInstructions: Message from guest (0x7ffc4e255440): will make the following configs symbolic: autocommit
+20 [State 0] BaseInstructions: Message from guest (0x7ffc4e255440): finish checking the result configuration: autocommit
+20 [State 0] BaseInstructions: Message from guest (0x7ffc4e255440): found target sys_var autocommit
+20 [State 0] BaseInstructions: Message from guest (0x7ffc4e2553c0): will make autocommit symbolic: 1 bytes starting at 0x7ffc4e2559df
+20 [State 0] BaseInstructions:  the namestr is autocommit
+20 [State 0] BaseInstructions: Inserted symbolic data @0x7ffc4e2559df of size 0x1: autocommit='\x01' pc=0xbafd10
+20 [State 0] BaseInstructions: Message from guest (0x7ffc4e2556c0): actually called S2E to make autocommit symbolic!!!!
+20 [State 0] Forking state 0 at pc = 0x70c67e at pagedir = 0x139228000
+    state 0
+    state 1
+...
+34 [State 1] Switching from state 1 to state 0
+39 [State 0] Switching from state 0 to state 1
+40 [State 1] LinuxMonitor: mmap pid=0x4f5 addr=0x7f9f826c2000 size=0x1301000 prot=0x3 flag=0x22 pgoff=0x0
+40 [State 1] LinuxMonitor: munmap pid=0x4f5 start=0x7f9f826c2000 end=0x7f9f839c3000
+...
+40 [State 1] LinuxMonitor: mprotect pid=0x501 start=0x7f9f7c000000 size=0x21000 prot=0x3
+49 [State 1] Switching from state 1 to state 0
+...
+83 [State 1] BaseInstructions: Killing state 1
+83 [State 1] Terminating state: State was terminated by opcode
+            message: "bootstrap terminated"
+            status: 0x0
+83 [State 1] TestCaseGenerator: generating test case at address 0x804976b
+83 [State 1] TestCaseGenerator:      v0_autocommit_0 = {0x0}; (string) "."
+All states were terminated
+s2e-block: dirty sectors on close:584
+Terminating node id 0 (instance slot 0)
+Engine terminated.
 ```
 
 ## Known Issues

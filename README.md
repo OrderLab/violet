@@ -130,10 +130,12 @@ target_init
 # Download the target file to analyze
 ${S2EGET} "mysqld"
 ${S2EGET} "libaio.so.1.0.1"
+${S2EGET} "related_configuration.log"
 
 sudo mv libaio.so.1.0.1 /lib/x86_64-linux-gnu/
 sudo ln -s /lib/x86_64-linux-gnu/libaio.so.1.0.1 /lib/x86_64-linux-gnu/libaio.so.1
 mv mysqld /home/s2e/software/mysql/5.5.59/bin
+mv related_configuration.log /home/s2e/software/mysql/5.5.59
 cd /home/s2e/software/mysql/5.5.59/
 
 # Run the analysis

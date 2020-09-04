@@ -91,10 +91,12 @@ pluginsConfig.FunctionMonitor = {
 
 add_plugin("LatencyTracker")
 pluginsConfig.LatencyTracker = {
-  profileAllFunction = true,
+  profileAllFunction = false,
   traceSyscall = true,
+  traceFileIO = true,
+  traceFunctionCall = true,
   traceInstruction = false,
-  entryAddress  = 0x2bab30,
+  printTrace = false,
 }
 ```
 

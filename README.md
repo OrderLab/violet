@@ -304,12 +304,16 @@ $ cd build && cmake .. && make -j4 && cd ..
 # Build a normal MySQL
 $ unset S2EDIR
 $ cd ~/violet/target-sys/mysql/5.5.59
-$ rm -rf build dist
-$ ./compile.sh
+$ ./compile.sh normal
+$ cd normal/build
+$ make install
 
 # Run the normal MySQL
+$ cd ..
+$ ../init_db.sh
 $ cd dist
 $ ./bin/mysqld --defaults-file=support-files/my-huge.cnf --one-thread &
+$ ./bin/mysqladmin -S mysqld.sock -u root shutdown
 ```
 
 There should be a `configuration.log` file in `dist`.
@@ -318,8 +322,8 @@ There should be a `configuration.log` file in `dist`.
 
 ```bash
 $ cd  ~/violet/static-analyzer
-$ cp ~/violet/target-sys/mysql/5.5.59/dist/configuraitons.log .
-$ cp ~/violet/target-sys/mysql/5.5.59/dist/mysqld.bc .
+$ cp ~/violet/target-sys/mysql/5.5.59/normal/dist/configuraitons.log .
+$ cp ~/violet/target-sys/mysql/mysqld.bc .
 $ opt -load build/dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t calculate_offset -e mysql -i mysql_config_raw.log  <../mysqld.bc> /dev/null
 $ opt -load build/dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t dependency_analysis -e mysql -i mysql_config.log  <../mysqld.bc> /dev/null
 $ cd ~/violet/workspace/projects/mysqld

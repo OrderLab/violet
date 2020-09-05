@@ -316,9 +316,12 @@ If you want to use static analyzer to get the result, you need to build the stat
 
 ```
 $ cd ~/violet/static-analyzer
+# If LLVM 3.8 is not installed, install it.
+# $ ./install-llvm.sh 3.8.1 ~/llvm
+
 $ mkdir build 
 $ cd build && cmake .. && make -j4 && cd ..
-$ ./install-llvm.sh 3.8.0 ~/llvm
+
 $ cd ~/violet/target-sys/mysql/5.5.59/dist/
 $ ./bin/mysqld --defaults-file=support-files/my-huge.cnf --one-thread &
 $ cd  ~/violet/static-analyzer
@@ -332,7 +335,6 @@ $ cd ~/violet/workspace/projects/mysqld
 $ cp ~/violet/static-analyzer/mysql_result.log related_configuration.log .
 $./launch-s2e.sh
 ```
-
 
 ## Known Issues
 

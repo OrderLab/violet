@@ -141,7 +141,7 @@ cd /home/s2e/software/mysql/5.5.59/
 # Run the analysis
 export VIO_SYM_CONFIGS="autocommit"
 ./bin/mysqld --defaults-file=my.cnf --one-thread &
-sleep 30
+sleep 60
 ./bin/mysql -S mysqld.sock << EOF
 use test;
 INSERT INTO tbl(col) VALUES(31);
@@ -200,13 +200,26 @@ Engine terminated.
 
 ### 6. Trace Analysis
 
-Run the trace analyzer on the traces from the symbolic execution:
+#### 6.1 Build the trace analyzer
 
 ```bash
 $ cd ~/violet/trace-analyzer
 $ mkdir build 
 $ cmake .. && make -j4 && cd ..
-$ build/bin/trace_analyzer -i test/LatencyTrace1_autocommit.dat -s test/mysqld.sym -o result.txt
+```
+
+Test it with the sample trace data from MySQL:
+
+```bash
+$ build/bin/trace_analyzer -i test/LatencyTrace1_autocommit.dat -s test/mysqld.sym -o test_result.txt
+```
+
+#### 6.2 Run on collected traces
+
+Run the trace analyzer on the traces from the symbolic execution:
+
+```bash
+$ build/bin/trace_analyzer -e ~/violet/target-sys/mysql/dist/bin/mysqld -i ~/violet/workspace/projects/mysqld/s2e-last/LatencyTracer.dat -o mysql_result.txt
 ```
 
 ## Known Issues
@@ -249,6 +262,17 @@ which can cause interference to the performance analysis.
 A more ideal solution is to enable nested virtualization and KVM in the VM instances, 
 e.g., for Google cloud, following the instruction in this [guide](https://cloud.google.com/compute/docs/instances/enable-nested-virtualization-vm-instances).
 In general, it is highly recommended to run Violet in physical machines.
+
+3. 0-sized LatencyTrace.dat
+
+This might occur because the target system startup takes longer than expected. 
+In MySQL's case, the boostrap command is `./bin/mysqld --defaults-file=my.cnf 
+--one-thread &`. We wait for 30 seconds before executing the MySQL client.
+But this wait time may not be enough and thus `./bin/mysql -S mysqld.sock`
+would fail because MySQL server is not ready for connection. You can bump
+the sleep time up. In other times, this is typically because of some specific
+errors that are better troubleshooted with QEMU graphics output in order to 
+view the error messages in the guest.
 
 ## Publication
 

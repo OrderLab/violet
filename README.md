@@ -130,49 +130,24 @@ target_init
 # Download the target file to analyze
 ${S2EGET} "mysqld"
 ${S2EGET} "libaio.so.1.0.1"
-${S2EGET} "related_configuration.log"
 
 sudo mv libaio.so.1.0.1 /lib/x86_64-linux-gnu/
 sudo ln -s /lib/x86_64-linux-gnu/libaio.so.1.0.1 /lib/x86_64-linux-gnu/libaio.so.1
 mv mysqld /home/s2e/software/mysql/5.5.59/bin
-mv related_configuration.log /home/s2e/software/mysql/5.5.59
 cd /home/s2e/software/mysql/5.5.59/
 
 # Run the analysis
 export VIO_SYM_CONFIGS="autocommit"
 ./bin/mysqld --defaults-file=my.cnf --one-thread &
-sleep 60
+sleep 40
 ./bin/mysql -S mysqld.sock << EOF
-  use test;
-  INSERT INTO tbl(col) VALUES(31);
-  INSERT INTO tbl(col) VALUES(32);
-  INSERT INTO tbl(col) VALUES(33);
-  INSERT INTO tbl(col) VALUES(34);
-  INSERT INTO tbl(col) VALUES(31);
-  INSERT INTO tbl(col) VALUES(32);
-  INSERT INTO tbl(col) VALUES(33);
-  INSERT INTO tbl(col) VALUES(34);
-  INSERT INTO tbl(col) VALUES(31);
-  INSERT INTO tbl(col) VALUES(32);
-  INSERT INTO tbl(col) VALUES(33);
-  INSERT INTO tbl(col) VALUES(34);
-  INSERT INTO tbl(col) VALUES(31);
-  INSERT INTO tbl(col) VALUES(32);
-  INSERT INTO tbl(col) VALUES(33);
-  INSERT INTO tbl(col) VALUES(34);
-  INSERT INTO tbl(col) VALUES(31);
-  INSERT INTO tbl(col) VALUES(32);
-  INSERT INTO tbl(col) VALUES(33);
-  INSERT INTO tbl(col) VALUES(34);
-  INSERT INTO tbl(col) VALUES(31);
-  INSERT INTO tbl(col) VALUES(32);
-  INSERT INTO tbl(col) VALUES(33);
-  INSERT INTO tbl(col) VALUES(34);
-  INSERT INTO tbl(col) VALUES(31);
-  INSERT INTO tbl(col) VALUES(32);
-  INSERT INTO tbl(col) VALUES(33);
-  INSERT INTO tbl(col) VALUES(34);
+use test;
+INSERT INTO tbl(col) VALUES(31);
+INSERT INTO tbl(col) VALUES(32);
+INSERT INTO tbl(col) VALUES(33);
+INSERT INTO tbl(col) VALUES(34);
 EOF
+./bin/mysqladmin -S mysqld.sock -u root shutdown
 ```
 
 In this case, we are testing making the MySQL configuration parameter `autocommit` 
@@ -311,28 +286,69 @@ $ cp ~/violet/target-sys/mysql/related_configuration.log .
 $ ./launch-s2e.sh
 ```
 
-##### 8.2 Build the static analyzer to get related configuration file
+#### 8.2 Build the static analyzer 
 If you want to use static analyzer to get the result, you need to build the static analyzer and llvm: 
 
-```
+```bash
 $ cd ~/violet/static-analyzer
 # If LLVM 3.8 is not installed, install it.
 # $ ./install-llvm.sh 3.8.1 ~/llvm
 
 $ mkdir build 
 $ cd build && cmake .. && make -j4 && cd ..
+```
 
-$ cd ~/violet/target-sys/mysql/5.5.59/dist/
+#### 8.3 Build and run normal MySQL to get configuration metadata
+
+```bash
+# Build a normal MySQL
+$ unset S2EDIR
+$ cd ~/violet/target-sys/mysql/5.5.59
+$ rm -rf build dist
+$ ./compile.sh
+
+# Run the normal MySQL
+$ cd dist
 $ ./bin/mysqld --defaults-file=support-files/my-huge.cnf --one-thread &
+```
+
+There should be a `configuration.log` file in `dist`.
+
+#### 8.4 Run the static analyzer to get related configuration file
+
+```bash
 $ cd  ~/violet/static-analyzer
-$ mkdir build
-$ cd build && cmake .. && make -j4 && cd ..
-$ cp ~/violet/target-sys/mysql/5.5.59/dist/configuraitons.log
-$ cp ~/violet/target-sys/mysql/5.5.59/dist/mysqld.bc
-$ opt -load dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t calculate_offset -e mysql -i mysql_config_raw.log  <../mysqld.bc> /dev/null
-$ opt -load dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t dependency_analysis -e mysql -i mysql_config.log  <../mysqld.bc> /dev/null
+$ cp ~/violet/target-sys/mysql/5.5.59/dist/configuraitons.log .
+$ cp ~/violet/target-sys/mysql/5.5.59/dist/mysqld.bc .
+$ opt -load build/dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t calculate_offset -e mysql -i mysql_config_raw.log  <../mysqld.bc> /dev/null
+$ opt -load build/dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t dependency_analysis -e mysql -i mysql_config.log  <../mysqld.bc> /dev/null
 $ cd ~/violet/workspace/projects/mysqld
 $ cp ~/violet/static-analyzer/mysql_result.log related_configuration.log .
+```
+
+#### 8.5 Modify bootstrap to copy related configuration file to guest
+
+Similar to 5.4, in which we download the built `mysqld` to the guest image with 
+`s2eget`, modify the bootstrap script as follows:
+
+```bash
+# Download the target file to analyze
+${S2EGET} "mysqld"
+${S2EGET} "libaio.so.1.0.1"
+${S2EGET} "related_configuration.log"
+
+sudo mv libaio.so.1.0.1 /lib/x86_64-linux-gnu/
+sudo ln -s /lib/x86_64-linux-gnu/libaio.so.1.0.1 /lib/x86_64-linux-gnu/libaio.so.1
+mv mysqld /home/s2e/software/mysql/5.5.59/bin
+mv related_configuration.log /home/s2e/software/mysql/5.5.59
+cd /home/s2e/software/mysql/5.5.59/
+
+...
+```
+
+#### 8.6 Re-run symbolic execution
+
+```bash
 $./launch-s2e.sh
 ```
 
@@ -381,7 +397,7 @@ In general, it is highly recommended to run Violet in physical machines.
 
 This might occur because the target system startup takes longer than expected. 
 In MySQL's case, the boostrap command is `./bin/mysqld --defaults-file=my.cnf 
---one-thread &`. We wait for 30 seconds before executing the MySQL client.
+--one-thread &`. We wait for 40 seconds before executing the MySQL client.
 But this wait time may not be enough and thus `./bin/mysql -S mysqld.sock`
 would fail because MySQL server is not ready for connection. You can bump
 the sleep time up. In other times, this is typically because of some specific

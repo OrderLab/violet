@@ -173,7 +173,6 @@ sleep 60
   INSERT INTO tbl(col) VALUES(33);
   INSERT INTO tbl(col) VALUES(34);
 EOF
-./bin/mysqladmin -S mysqld.sock -u root shutdown
 ```
 
 In this case, we are testing making the MySQL configuration parameter `autocommit` 
@@ -214,7 +213,10 @@ The execution should explore two states, with output of something like the follo
 83 [State 1] Terminating state: State was terminated by opcode
             message: "bootstrap terminated"
             status: 0x0
-83 [State 1] TestCaseGenerator: generating test case at address 0x804976b
+83 [State 1] TestCaseGenerator: generating test case at address 0x804989b; the number of instruction 0; the number of syscall 225;
+83 [State 1] LatencyTracker: read 561 bytes through 6 read call, read 32804 bytes through 4 pread calls, write 688 bytes through 29 write calls, write 0 bytes through 0 pwrite calls
+83 [State 1] LatencyTracker: the constraints name is autocommit the target configuration is autocommit
+83 [State 1] LatencyTracker: 1 0 0 1
 83 [State 1] TestCaseGenerator:      v0_autocommit_0 = {0x0}; (string) "."
 All states were terminated
 s2e-block: dirty sectors on close:584
@@ -229,7 +231,7 @@ Engine terminated.
 ```bash
 $ cd ~/violet/trace-analyzer
 $ mkdir build 
-$ cmake .. && make -j4 && cd ..
+$ cd build && cmake .. && make -j4 && cd ..
 ```
 
 Test it with the sample trace data from MySQL:
@@ -237,10 +239,20 @@ Test it with the sample trace data from MySQL:
 ```bash
 $ build/bin/trace_analyzer -i test/LatencyTrace1_autocommit.dat -s test/mysqld.sym -o test_result.txt
 ```
+The trace would find the path 0 is slower than path 1, with the output like following 
 
+```
+[State 0] critical path (compared to state 1) :                                                                                                            =>  => 
+   => function @0x602435<mysql_parse(THD*, char*, unsigned int, Parser_state*)>,caller @0x5f51be<dispatch_command(enum_server_command, THD*, char*, unsigned int)>,activity_id 244,parent_id 0,execution time 320.297ms,diff time 279.075ms  
+   => function @0x5f7e31<mysql_execute_command(THD*)>,caller @0x602435<mysql_parse(THD*, char*, unsigned int, Parser_state*)>,activity_id 1412,parent_id 244,execution time 313.127ms,diff time 278.881ms                                                                                                            =>     
+   => function @0x5dec2a<mysql_insert(THD*, TABLE_LIST*, List<Item>&, List<List<Item> >&, List<Item>&, List<Item>&, enum_duplicates, bool)>,caller @0x5f7e31<mysql_execute_command(THD*)>,activity_id 1616,parent_id 1412,execution time 290.047ms,diff time 262.022ms 
+...
+[State 0] => the number of instruction is 0,the number of syscall is 0, the total execution time 2098.92ms                                               
+[State 1] => the number of instruction is 0,the number of syscall is 0, the total execution time 1582.26ms 
+```
 #### 6.2 Run on collected traces
 
-Run the trace analyzer on the traces from the symbolic execution:
+Run the trace analyzer on the traces from the symbolic execution, the result is in mysql_result.txt file:
 
 ```bash
 $ build/bin/trace_analyzer -e ~/violet/target-sys/mysql/dist/bin/mysqld -i ~/violet/workspace/projects/mysqld/s2e-last/LatencyTracer.dat -o mysql_result.txt
@@ -290,6 +302,37 @@ Repeat 6.2 to analyze the new trace data:
 $ cd ~/violet/trace-analyzer
 $ build/bin/trace_analyzer -i ~/violet/workspace/projects/mysqld/s2e-last/LatencyTracer.dat -o mysql_result.txt
 ```
+### 8. Re-run Symbolic Execution with related configurations.
+#### 8.1 Get related configuration file
+  We provide a stock related configuration file in the target-sys folder for test the symbolic engine with relatedtion configuration in case the user doesn't want to run the static analyzer to get the file. To do this, the user just need to copy the related_configurations.log file into the project repo and run the experiment.
+```
+$ cd ~/violet/workspace/projects/mysqld
+$ cp ~/violet/target-sys/mysql/related_configuration.log .
+$ ./launch-s2e.sh
+```
+
+##### 8.2 Build the static analyzer to get related configuration file
+If you want to use static analyzer to get the result, you need to build the static analyzer and llvm: 
+
+```
+$ cd ~/violet/static-analyzer
+$ mkdir build 
+$ cd build && cmake .. && make -j4 && cd ..
+$ ./install-llvm.sh 3.8.0 ~/llvm
+$ cd ~/violet/target-sys/mysql/5.5.59/dist/
+$ ./bin/mysqld --defaults-file=support-files/my-huge.cnf --one-thread &
+$ cd  ~/violet/static-analyzer
+$ mkdir build
+$ cd build && cmake .. && make -j4 && cd ..
+$ cp ~/violet/target-sys/mysql/5.5.59/dist/configuraitons.log
+$ cp ~/violet/target-sys/mysql/5.5.59/dist/mysqld.bc
+$ opt -load dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t calculate_offset -e mysql -i mysql_config_raw.log  <../mysqld.bc> /dev/null
+$ opt -load dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t dependency_analysis -e mysql -i mysql_config.log  <../mysqld.bc> /dev/null
+$ cd ~/violet/workspace/projects/mysqld
+$ cp ~/violet/static-analyzer/mysql_result.log related_configuration.log .
+$./launch-s2e.sh
+```
+
 
 ## Known Issues
 

@@ -222,6 +222,51 @@ Run the trace analyzer on the traces from the symbolic execution:
 $ build/bin/trace_analyzer -e ~/violet/target-sys/mysql/dist/bin/mysqld -i ~/violet/workspace/projects/mysqld/s2e-last/LatencyTracer.dat -o mysql_result.txt
 ```
 
+### 7. Re-run Symbolic Execution and Trace Analysis.
+
+We can re-run the symbolic execution and trace analysis. For example, we can now 
+test symbolic execution of the configuration parameter together with workload template. 
+To do this, we need to go to 5.4 and modify the bootstrap script. In particular, 
+replace the concrete queries part with a symbolic query token that we used -- `@@`:
+
+```bash
+# Run the analysis
+export VIO_SYM_CONFIGS="autocommit"
+./bin/mysqld --defaults-file=my.cnf --one-thread &
+sleep 60
+./bin/mysql -S mysqld.sock << EOF
+use test;
+@@;
+EOF
+./bin/mysqladmin -S mysqld.sock -u root shutdown
+```
+
+Now, call the launch script again:
+
+```bash
+$ ./launch-s2e.sh
+```
+
+You should see more than two states being explored now.
+
+```
+271 [State 21] TestCaseGenerator: generating test case at address 0x804976b; the number of instruction 1366900227; the number of syscall 38;
+271 [State 21] LatencyTracker: read 65 bytes through 1 read call, read 0 bytes through 0 pread calls, write 612 bytes through 6 write calls, write 0 bytes through 0 pwrite calls
+271 [State 21] LatencyTracker: the constraints name is autocommit the target configuration is autocommit
+...
+271 [State 21] TestCaseGenerator:      v0_autocommit_0 = {0x1}; (string) "."
+          v1_index_2 = {0x0, 0x0, 0x0, 0x0}; (int32_t) 0, (string) "...."
+          v2_index_5 = {0x0, 0x0, 0x0, 0x0}; (int32_t) 0, (string) "...."
+All states were terminated
+```
+
+Repeat 6.2 to analyze the new trace data:
+
+```
+$ cd ~/violet/trace-analyzer
+$ build/bin/trace_analyzer -i ~/violet/workspace/projects/mysqld/s2e-last/LatencyTracer.dat -o mysql_result.txt
+```
+
 ## Known Issues
 
 1. AMD CPUs

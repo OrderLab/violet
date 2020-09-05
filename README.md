@@ -143,11 +143,35 @@ export VIO_SYM_CONFIGS="autocommit"
 ./bin/mysqld --defaults-file=my.cnf --one-thread &
 sleep 60
 ./bin/mysql -S mysqld.sock << EOF
-use test;
-INSERT INTO tbl(col) VALUES(31);
-INSERT INTO tbl(col) VALUES(32);
-INSERT INTO tbl(col) VALUES(33);
-INSERT INTO tbl(col) VALUES(34);
+  use test;
+  INSERT INTO tbl(col) VALUES(31);
+  INSERT INTO tbl(col) VALUES(32);
+  INSERT INTO tbl(col) VALUES(33);
+  INSERT INTO tbl(col) VALUES(34);
+  INSERT INTO tbl(col) VALUES(31);
+  INSERT INTO tbl(col) VALUES(32);
+  INSERT INTO tbl(col) VALUES(33);
+  INSERT INTO tbl(col) VALUES(34);
+  INSERT INTO tbl(col) VALUES(31);
+  INSERT INTO tbl(col) VALUES(32);
+  INSERT INTO tbl(col) VALUES(33);
+  INSERT INTO tbl(col) VALUES(34);
+  INSERT INTO tbl(col) VALUES(31);
+  INSERT INTO tbl(col) VALUES(32);
+  INSERT INTO tbl(col) VALUES(33);
+  INSERT INTO tbl(col) VALUES(34);
+  INSERT INTO tbl(col) VALUES(31);
+  INSERT INTO tbl(col) VALUES(32);
+  INSERT INTO tbl(col) VALUES(33);
+  INSERT INTO tbl(col) VALUES(34);
+  INSERT INTO tbl(col) VALUES(31);
+  INSERT INTO tbl(col) VALUES(32);
+  INSERT INTO tbl(col) VALUES(33);
+  INSERT INTO tbl(col) VALUES(34);
+  INSERT INTO tbl(col) VALUES(31);
+  INSERT INTO tbl(col) VALUES(32);
+  INSERT INTO tbl(col) VALUES(33);
+  INSERT INTO tbl(col) VALUES(34);
 EOF
 ./bin/mysqladmin -S mysqld.sock -u root shutdown
 ```

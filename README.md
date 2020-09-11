@@ -15,6 +15,34 @@ The Violet tool has multiple components:
 Each component is held in one or multiple separate repositories. This is the 
 root repository that contains the entry points for all the components.
 
+Table of Contents
+=================
+* [Requirements](#requirements)
+* [Usage](#usage)
+   * [1. Clone the repository](#1-clone-the-repository)
+   * [2. Build S2E and Violet:](#2-build-s2e-and-violet)
+   * [3. Build QEMU guest images:](#3-build-qemu-guest-images)
+   * [4. Build a target system:](#4-build-a-target-system)
+   * [5. Create an analysis project:](#5-create-an-analysis-project)
+      * [5.1 Initialize project](#51-initialize-project)
+      * [5.2 Modify configuration](#52-modify-configuration)
+      * [5.3 Link blobs](#53-link-blobs)
+      * [5.4 Modify bootstrap script](#54-modify-bootstrap-script)
+      * [5.5 Symbolic execution](#55-symbolic-execution)
+   * [6. Trace Analysis](#6-trace-analysis)
+      * [6.1 Build the trace analyzer](#61-build-the-trace-analyzer)
+      * [6.2 Run on collected traces](#62-run-on-collected-traces)
+   * [7. Re-run Symbolic Execution and Trace Analysis.](#7-re-run-symbolic-execution-and-trace-analysis)
+   * [8. Re-run Symbolic Execution with related configurations.](#8-re-run-symbolic-execution-with-related-configurations)
+      * [8.1 Get related configuration file](#81-get-related-configuration-file)
+      * [8.2 Build the static analyzer](#82-build-the-static-analyzer)
+      * [8.3 Build and run normal MySQL to get configuration metadata](#83-build-and-run-normal-mysql-to-get-configuration-metadata)
+      * [8.4 Run the static analyzer to get related configuration file](#84-run-the-static-analyzer-to-get-related-configuration-file)
+      * [8.5 Modify bootstrap to copy related configuration file to guest](#85-modify-bootstrap-to-copy-related-configuration-file-to-guest)
+      * [8.6 Re-run symbolic execution](#86-re-run-symbolic-execution)
+* [Known Issues](#known-issues)
+* [Publication](#publication)
+
 ## Requirements
 
 Violet is tested to work under Ubuntu 16.04. Running it in Ubuntu 18.04 is 
@@ -22,7 +50,7 @@ possible but requires extra hassles. The `build.sh` script in this repository
 is only tested in Ubuntu 16.04.
 
 It is also recommended to run Violet in physical machine if possible for reasons
-outlined in the Known Issues section.
+outlined in the [Known Issues](#known-issues) section.
 
 ## Usage
 

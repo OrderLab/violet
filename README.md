@@ -15,6 +15,15 @@ The Violet tool has multiple components:
 Each component is held in one or multiple separate repositories. This is the 
 root repository that contains the entry points for all the components.
 
+## Requirements
+
+Violet is tested to work under Ubuntu 16.04. Running it in Ubuntu 18.04 is 
+possible but requires extra hassles. The `build.sh` script in this repository 
+is only tested in Ubuntu 16.04.
+
+It is also recommended to run Violet in physical machine if possible for reasons
+outlined in the Known Issues section.
+
 ## Usage
 
 ### 1. Clone the repository
@@ -26,6 +35,14 @@ git submodule update --init --recursive
 ```
 
 ### 2. Build S2E and Violet:
+
+Put the following to `.bashrc` so that later the `s2e` command built to the 
+local path can be found. 
+
+```bash
+export PATH=$HOME/.local/bin:$PATH
+```
+Re-login the shell for it to take effect. Invoke the build script:
 
 ```bash
 $ ./build.sh

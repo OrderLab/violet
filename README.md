@@ -367,7 +367,7 @@ There should be a `configuration.log` file in `dist`.
 
 ```bash
 $ cd  ~/violet/static-analyzer
-$ cp ~/violet/target-sys/mysql/5.5.59/normal/dist/configuraitons.log .
+$ cp ~/violet/target-sys/mysql/5.5.59/normal/dist/configuraitons.log  mysql_config_raw.log
 $ cp ~/violet/target-sys/mysql/mysqld.bc .
 $ opt -load build/dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t calculate_offset -e mysql -i mysql_config_raw.log  <../mysqld.bc> /dev/null
 $ opt -load build/dependencyAnalysis/libdependencyAnalyzer.so -analyzer -t dependency_analysis -e mysql -i mysql_config.log  <../mysqld.bc> /dev/null

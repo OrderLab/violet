@@ -348,7 +348,7 @@ $ cd build && cmake .. && make -j4 && cd ..
 ```bash
 # Build a normal MySQL
 $ unset S2EDIR
-$ cd ~/violet/target-sys/mysql/5.5.59
+$ cd ~/violet/target-sys/mysql
 $ ./compile.sh normal
 $ cd normal/build
 $ make install
@@ -358,7 +358,7 @@ $ cd ..
 $ ../init_db.sh
 $ cd dist
 $ ./bin/mysqld --defaults-file=support-files/my-huge.cnf --one-thread &
-$ ./bin/mysqladmin -S mysqld.sock -u root shutdown
+$ ./bin/mysqladmin -S mysqld.sock -u root shutdown (Optional command, only used when the MySQL server is still running)
 ```
 
 There should be a `configuration.log` file in `dist`.

@@ -2,8 +2,7 @@
 
 Violet is a tool that uses selective symbolic execution to automatically derive 
 performance models of configuration parameters in large system and use the 
-models to detect specious configuration settings. The design of Violet is 
-described in our OSDI '20 [Paper](#).
+models to detect specious configuration settings. 
 
 The Violet tool has multiple components:
 
@@ -14,6 +13,21 @@ The Violet tool has multiple components:
 
 Each component is held in one or multiple separate repositories. This is the 
 root repository that contains the entry points for all the components.
+
+The technical design of Violet is described in our OSDI '20 [paper](https://www.cs.jhu.edu/~huang/paper/violet-osdi20-preprint.pdf).
+If you find Violet to be useful, please consider citing our paper:
+
+```
+@inproceedings{VioletOSDI20,
+  author = {Hu, Yigong and Huang, Gongqi and Huang, Peng},
+  title = {Automated Reasoning and Detection of Specious Configuration in Large Systems with Symbolic Execution},
+  booktitle = {Proceedings of the 14th USENIX Symposium on Networked Systems Design and Implementation},
+  series = {OSDI '20},
+  month = {November},
+  year = {2020},
+  publisher = {USENIX},
+}
+```
 
 Table of Contents
 =================
